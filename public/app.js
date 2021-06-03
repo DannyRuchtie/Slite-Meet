@@ -1,3 +1,4 @@
+
 import interact from "https://cdn.interactjs.io/v1.10.11/interactjs/index.js";
 
 const position = { x: 0, y: 0 };
@@ -20,3 +21,25 @@ interact(".item").draggable({
     }
   }
 });
+
+
+function share() {
+  /* Get the text field */
+
+var share = window.location.href;
+
+var input = document.createElement("input");
+input.setAttribute('type', 'text');
+input.setAttribute('id', 'url');
+input.setAttribute('value', share);
+
+document.body.appendChild(input);
+
+ /* Select the text field */
+ input.select();
+ input.execCommand("copy");
+
+
+}
+
+share();

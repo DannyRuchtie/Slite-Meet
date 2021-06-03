@@ -64,3 +64,15 @@ video {
 .item:active {
 scale(1.2);
 }
+
+
+.share{
+  position:absolute;
+  top:1rem;
+  right:1rem;
+}
+
+
+svg{
+  fill:#fff;
+}
