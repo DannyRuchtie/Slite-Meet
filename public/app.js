@@ -1,45 +1,37 @@
+function jquery() {
+  $(".item").click(function () {
 
-import interact from "https://cdn.interactjs.io/v1.10.11/interactjs/index.js";
+    $(this)
+      .addClass("move")
+      .draggable({ containment: "window", scroll: false, zIndex: 100 });
+  });
 
-const position = { x: 0, y: 0 };
+  $(".close").click(function (e) {
+    $(this).parent().removeClass("move").removeAttr("style");
+    e.stopPropagation();
+  });
+}
 
-interact(".item").draggable({
-  // enable inertial throwing
-  inertia: true,
-  modifiers: [
-    interact.modifiers.restrictRect({
-      restriction: "parent",
-      endOnly: true
-    })
-  ],
-  listeners: {
-    move(event) {
-      position.x += event.dx;
-      position.y += event.dy;
 
-      event.target.style.transform = `translate(${position.x}px, ${position.y}px)`;
-    }
-  }
-});
+
+var shareLink = document.getElementById("share");
+shareLink.addEventListener("click", share);
 
 
 function share() {
-  /* Get the text field */
-
 var share = window.location.href;
-
 var input = document.createElement("input");
 input.setAttribute('type', 'text');
 input.setAttribute('id', 'url');
 input.setAttribute('value', share);
-
 document.body.appendChild(input);
 
- /* Select the text field */
- input.select();
- input.execCommand("copy");
+input.select();
+input.setSelectionRange(0, 99999); /* For mobile devices */
 
+document.execCommand("copy");
 
+shareLink.classList.add("active");
+input.remove();
 }
 
-share();
