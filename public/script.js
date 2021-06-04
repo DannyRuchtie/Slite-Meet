@@ -63,6 +63,6 @@ function addVideoStream(video, stream) {
   });
 
   holder.append(video);
- jquery();
+
 }
 
