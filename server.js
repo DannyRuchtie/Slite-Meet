@@ -15,6 +15,7 @@ app.get("/:room", (req, res) => {
   res.render("room", { roomId: req.params.room });
 });
 
+
 io.on("connection", (socket) => {
   socket.on("join-room", (roomId, userId) => {
     socket.join(roomId);
@@ -23,7 +24,12 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
       socket.to(roomId).emit("user-disconnected", userId);
     });
+
+    socket.on("update-video-position", ({ userId, x, y }) => {
+      socket.to(roomId).emit("video-position-updated", { userId, x, y });
+    });
+
   });
 });
 
-server.listen(8080);
+server.listen(9999);

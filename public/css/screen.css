@@ -23,7 +23,7 @@ html,
 body {
   font-size: 13px;
   color: #a1a1a1;
-  background: rgb(20, 20, 20);
+  background: #f9efe4;
   padding: 0;
   margin: 0;
   overflow: hidden;
@@ -36,10 +36,13 @@ body {
   height: 100vh;
 }
 
+
+
 video {
   width: 100%;
   height: 100%;
   border-radius: 12px;
+  background: #fff;
   border: none;
   box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034);
   box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
