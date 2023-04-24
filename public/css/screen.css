@@ -68,6 +68,3 @@ video {
   user-select: none;
 }
 
-.item:active {
-scale(1.2);
-}

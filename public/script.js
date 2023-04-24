@@ -91,6 +91,8 @@ function removeDisconnectedVideo(userId) {
     disconnectedVideo.parentElement.remove();
   }
 }
+
+
 // Function to connect to a new user
 function connectToNewUser(userId, stream) {
   // Call the new user with the local stream
@@ -121,7 +123,14 @@ function connectToNewUser(userId, stream) {
 
 
 
+
 function addVideoStream(video, stream) {
+  // Check if the stream has a peerId property
+  if (!stream.peerId) {
+    console.error("Invalid stream - missing peerId property");
+    return;
+  }
+
   // Create a holder div element
   const holder = document.createElement("div");
 
@@ -133,17 +142,27 @@ function addVideoStream(video, stream) {
 
   // Check if the video element is the local video
   if (video.getAttribute("id") === "Myface") {
-    // If the local video is not already in the video grid, add it
-    if (!document.getElementById("Myface")) {
+    // Only add the local video element if it has a valid data-peer-id attribute
+    if (video.getAttribute("data-peer-id")) {
       videoGrid.append(holder);
     }
-  } else {
-    // Add remote video to the video grid
-    videoGrid.append(holder);
+  }
+
+  // Check if the video element is a remote video
+  if (video.getAttribute("id") !== "Myface") {
+    // Only add remote video to the video grid if it has a valid data-peer-id attribute
+    if (video.getAttribute("data-peer-id")) {
+      videoGrid.append(holder);
+    }
   }
 
   // Set the srcObject of the video element to the stream
   video.srcObject = stream;
+
+  // Uncomment to mute the local video element
+  if (video.getAttribute("id") === "Myface") {
+    video.muted = true;
+  }
 
   // Listen for when the video metadata has loaded
   video.addEventListener("loadedmetadata", () => {
