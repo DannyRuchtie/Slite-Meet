@@ -19,51 +19,78 @@ myVideo.muted = true;
 // Create an empty peers object
 const peers = {};
 
-// Get user media (audio and video)
-navigator.mediaDevices
-  .getUserMedia({
-    video: true,
-    audio: false
-  })
-  .then((stream) => {
-    // Add the video stream to the video element
-    addVideoStream(myVideo, stream);
+// Function to initialize the connections
+function initializeConnections() {
+  // Get user media (audio and video)
+  navigator.mediaDevices
+    .getUserMedia({
+      video: true,
+      audio: false,
+    })
+    .then((stream) => {
+      // Add the video stream to the video element
+      addVideoStream(myVideo, stream);
 
-    // Listen for calls from other peers
-    myPeer.on("call", (call) => {
-      // Answer the call with the local stream
-      call.answer(stream);
+      // Listen for calls from other peers
+      myPeer.on("call", (call) => {
+        // Answer the call with the local stream
+        call.answer(stream);
 
-      // Create a new video element
-      const video = document.createElement("video");
-      video.classList.add("remoteVideo");
+        // Create a new video element
+        const video = document.createElement("video");
+        video.classList.add("remoteVideo");
 
-      // Listen for the stream from the remote peer
-      call.on("stream", (userVideoStream) => {
-        // Add the video stream to the video element
-        addVideoStream(video, userVideoStream);
+        // Listen for the stream from the remote peer
+        call.on("stream", (userVideoStream) => {
+          // Add the video stream to the video element
+          addVideoStream(video, userVideoStream);
+        });
       });
-    });
 
-    // Listen for user connections
-    socket.on("user-connected", (userId) => {
-      // Connect to the new user with the local stream
-      connectToNewUser(userId, stream);
+      // Listen for user connections
+      socket.on("user-connected", (userId) => {
+        // Connect to the new user with the local stream
+        connectToNewUser(userId, stream);
+      });
+
+      // Listen for the clients list from the server
+      socket.on("clients-list", (clients) => {
+        // Connect to each client in the list
+        clients.forEach((clientId) => {
+          // Check if the clientId is not equal to the user's peer ID
+          if (myPeer.id !== clientId) {
+            connectToNewUser(clientId, stream);
+          }
+        });
+      });
+
+      // Emit a join room event to the server
+      socket.emit("join-room", ROOM_ID, myPeer.id);
     });
-  });
+}
+
+// Listen for when the peer is open
+myPeer.on("open", (id) => {
+  // Initialize the connections after the peer ID is generated
+  initializeConnections();
+});
 
 // Listen for user disconnections
 socket.on("user-disconnected", (userId) => {
   // Close the connection to the disconnected user
   if (peers[userId]) peers[userId].close();
+
+  // Remove the disconnected user's video element immediately
+  removeDisconnectedVideo(userId);
 });
 
-// Listen for when the peer is open
-myPeer.on("open", (id) => {
-  // Emit a join room event to the server
-  socket.emit("join-room", ROOM_ID, id);
-});
-
+// Function to remove the disconnected user's video element
+function removeDisconnectedVideo(userId) {
+  const disconnectedVideo = document.querySelector(`video[data-peer-id="${userId}"]`);
+  if (disconnectedVideo) {
+    disconnectedVideo.parentElement.remove();
+  }
+}
 // Function to connect to a new user
 function connectToNewUser(userId, stream) {
   // Call the new user with the local stream
@@ -74,6 +101,9 @@ function connectToNewUser(userId, stream) {
 
   // Listen for the stream from the remote peer
   call.on("stream", (userVideoStream) => {
+    // Set the peerId property on the user video stream object
+    userVideoStream.peerId = userId;
+
     // Add the video stream to the video element
     addVideoStream(video, userVideoStream);
   });
@@ -88,16 +118,29 @@ function connectToNewUser(userId, stream) {
   peers[userId] = call;
 }
 
-// Function to add the video stream to the video element
+
+
+
 function addVideoStream(video, stream) {
   // Create a holder div element
   const holder = document.createElement("div");
 
+  // Add a data-peer-id attribute to the video element
+  video.setAttribute("data-peer-id", stream.peerId);
+
   // Add the item class to the holder div
   holder.classList.add("item");
 
-  // Append the holder div to the video grid
-  videoGrid.append(holder);
+  // Check if the video element is the local video
+  if (video.getAttribute("id") === "Myface") {
+    // If the local video is not already in the video grid, add it
+    if (!document.getElementById("Myface")) {
+      videoGrid.append(holder);
+    }
+  } else {
+    // Add remote video to the video grid
+    videoGrid.append(holder);
+  }
 
   // Set the srcObject of the video element to the stream
   video.srcObject = stream;
