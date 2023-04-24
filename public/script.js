@@ -28,6 +28,9 @@ function initializeConnections() {
       audio: false,
     })
     .then((stream) => {
+      // Set the peerId property on the stream object
+      stream.peerId = myPeer.id;
+
       // Add the video stream to the video element
       addVideoStream(myVideo, stream);
 
@@ -68,6 +71,7 @@ function initializeConnections() {
       socket.emit("join-room", ROOM_ID, myPeer.id);
     });
 }
+
 
 // Listen for when the peer is open
 myPeer.on("open", (id) => {
