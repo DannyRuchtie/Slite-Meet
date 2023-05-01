@@ -25,7 +25,7 @@ function initializeConnections() {
   navigator.mediaDevices
     .getUserMedia({
       video: true,
-      audio: false, //remove this line if you want to add audio 
+      audio: true,  
     })
     .then((stream) => {
       // Set the peerId property on the stream object
