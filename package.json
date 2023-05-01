@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google-cloud/speech": "^5.4.1",
+    "@google-cloud/storage": "^6.9.5",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "face-api.js": "^0.20.0",
