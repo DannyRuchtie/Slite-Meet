@@ -53,7 +53,7 @@ function initializeConnections() {
         connectToNewUser(userId, stream);
       });
 
-        // Listen for the clients list from the server
+      // Listen for the clients list from the server
       socket.on("clients-list", (clients) => {
         // Connect to each client in the list
         clients.forEach((clientId) => {
@@ -88,10 +88,11 @@ socket.on("user-disconnected", (userId) => {
   connectedClients.delete(userId);
 });
 
-
 // Function to remove the disconnected user's video element
 function removeDisconnectedVideo(userId) {
-  const disconnectedVideo = document.querySelector(`video[data-peer-id="${userId}"]`);
+  const disconnectedVideo = document.querySelector(
+    `video[data-peer-id="${userId}"]`
+  );
   if (disconnectedVideo) {
     // Remove the holder div containing the disconnected user's video element
     disconnectedVideo.parentElement.remove();
@@ -124,9 +125,6 @@ function connectToNewUser(userId, stream) {
   // Add the call to the peers object
   peers[userId] = call;
 }
-
-
-
 
 function addVideoStream(video, stream) {
   // Create a holder div element
@@ -172,8 +170,7 @@ function toggleRecording(stream) {
 
   if (!mediaRecorder || mediaRecorder.state === "inactive") {
     // Create a new media recorder
-    mediaRecorder = new MediaRecorder(stream);
-
+    mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/mp3" });
     // Start the media recorder
     mediaRecorder.start();
 
@@ -200,7 +197,7 @@ function toggleRecording(stream) {
 // Save the recording as a file and transcribe the audio
 async function saveRecording() {
   // Create a blob from the recorded chunks
-  const blob = new Blob(recordedChunks, { type: "audio/webm" });
+  const blob = new Blob(recordedChunks, { type: "audio/mp3" });
 
   // Transcribe the recorded audio
   await transcribeAudio(blob);
@@ -236,13 +233,12 @@ document.getElementById("recordButton").addEventListener("click", () => {
   }
 });
 
-
 // Function to transcribe the recorded audio
 async function transcribeAudio(blob) {
   try {
     // Create a FormData object and append the audio file
     const formData = new FormData();
-    formData.append("audio", blob, "recording.webm");
+    formData.append("audio", blob, "recording.mp3");
 
     // Send the audio file to the server for transcription
     const response = await fetch("/transcribe", {

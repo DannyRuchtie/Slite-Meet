@@ -13,7 +13,7 @@ const { v4: uuidV4 } = require("uuid");
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "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";
 
 // Define the multer middleware for handling file uploads
 const upload = multer();
@@ -29,21 +29,27 @@ app.get("/:room", (req, res) => {
 app.post("/transcribe", upload.single("audio"), async (req, res) => {
   try {
     // Save the received audio file temporarily
-    const tempFilePath = "temp_audio.webm";
+    const tempFilePath = "recording.mp3";
     await util.promisify(fs.writeFile)(tempFilePath, req.file.buffer);
 
     // Create a FormData object and append the audio file
     const formData = new FormData();
-    formData.append("file", fs.createReadStream(tempFilePath), { filename: "audio.webm" });
+    formData.append("file", fs.createReadStream(tempFilePath), {
+      filename: "recording.mp3",
+    });
     formData.append("model", "whisper-1");
 
     // Make the API call to the Whisper ASR API
-    const response = await axios.post("https://api.openai.com/v1/audio/transcriptions", formData, {
-      headers: {
-        ...formData.getHeaders(),
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-      },
-    });
+    const response = await axios.post(
+      "https://api.openai.com/v1/audio/transcriptions",
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+        },
+      }
+    );
 
     // Delete the temporary audio file
     await util.promisify(fs.unlink)(tempFilePath);
@@ -54,7 +60,7 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
     // Send the transcription as a response
     res.send({ transcription });
   } catch (error) {
-    console.error("Error during transcription:", error);
+    console.error("Error during transcription:", error.response?.data);
     res.status(500).send({ error: "Error during transcription" });
   }
 });
