@@ -164,13 +164,17 @@ function addVideoStream(video, stream) {
 let mediaRecorder;
 let recordedChunks = [];
 
+
 // Start or stop recording based on the current state
 function toggleRecording(stream) {
   const recordButton = document.getElementById("recordButton");
 
   if (!mediaRecorder || mediaRecorder.state === "inactive") {
     // Create a new media recorder
-    mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/mp3" });
+    mediaRecorder = new MediaRecorder(stream, {
+      audioBitsPerSecond: 64000,
+      mimeType: 'audio/webm'
+    });
     // Start the media recorder
     mediaRecorder.start();
 
@@ -179,6 +183,9 @@ function toggleRecording(stream) {
       // Add the recorded chunk to the recordedChunks array
       recordedChunks.push(e.data);
     };
+    mediaRecorder.onstop = (e) => {
+      saveRecording();
+    }
 
     // Update the button text and add the recording class
     recordButton.classList.add("recording");
@@ -188,16 +195,13 @@ function toggleRecording(stream) {
 
     // Update the button text and remove the recording class
     recordButton.classList.remove("recording");
-
-    // Save the recording as a file
-    saveRecording();
   }
 }
 
 // Save the recording as a file and transcribe the audio
 async function saveRecording() {
   // Create a blob from the recorded chunks
-  const blob = new Blob(recordedChunks, { type: "audio/mp3" });
+  const blob = new Blob(recordedChunks, {type: "audio/webm"});
 
   // Transcribe the recorded audio
   await transcribeAudio(blob);
