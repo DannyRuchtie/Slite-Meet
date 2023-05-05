@@ -2,7 +2,6 @@
   border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
-
 :root {
   --active: #636cea;
   --size: 256px;
@@ -27,7 +26,7 @@ html.dragging body {
 
 html,
 body {
-  font-size: 13px;
+  font-size: 1rem;
   color: #a1a1a1;
   background: #f9efe4;
   padding: 0;
@@ -40,6 +39,12 @@ body {
 #video-grid {
   width: 100vw;
   height: 100vh;
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  grid-template-columns: auto auto auto;
+  grid-gap: 2rem;
+  padding: 1rem;
 }
 
 
@@ -48,18 +53,15 @@ video {
   width: 100%;
   height: 100%;
   border-radius: 12px;
-
   border: none;
   box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034);
   box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
     0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06),
     0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086),
     0 100px 80px rgba(0, 0, 0, 0.12);
-
   object-fit: cover;
   text-align: center;
   transition: ease-out 100ms;
-
   margin: 0 0.25rem;
 }
 
@@ -69,6 +71,43 @@ video {
   height: var(--size);
   touch-action: none;
   user-select: none;
-
 }
 
+.item:empty{
+  display: none;
+}
+
+
+#recordButton{
+  all: unset;
+  width: 4rem;
+  height: 4rem;
+  position: absolute;
+  bottom:3rem;
+  left:50%;
+  margin-left: -2rem;
+  z-index: 9999;
+  text-indent: -999px;
+  overflow: hidden;
+  border-radius: 50%;
+  border:3px solid white;
+  outline: 3px solid #ACB1B9;
+  text-align: center;
+}
+
+
+#recordButton span{
+  display: block;
+  width:4rem;
+  height:4rem;
+  background: #DB2F2F;
+  border-radius: 8px;
+  transition: all .2s ease-in-out;
+}
+#recordButton span:hover{
+  background: #ca2c2c;
+}
+
+#recordButton.recording span{
+  transform: scale(0.6);
+}

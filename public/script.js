@@ -93,9 +93,11 @@ socket.on("user-disconnected", (userId) => {
 function removeDisconnectedVideo(userId) {
   const disconnectedVideo = document.querySelector(`video[data-peer-id="${userId}"]`);
   if (disconnectedVideo) {
+    // Remove the holder div containing the disconnected user's video element
     disconnectedVideo.parentElement.remove();
   }
 }
+
 // Function to connect to a new user
 function connectToNewUser(userId, stream) {
   // Call the new user with the local stream
@@ -159,3 +161,75 @@ function addVideoStream(video, stream) {
   // Append the video element to the holder div
   holder.append(video);
 }
+
+// Global variable to store the media recorder and recorded chunks
+let mediaRecorder;
+let recordedChunks = [];
+
+// Start or stop recording based on the current state
+function toggleRecording(stream) {
+  const recordButton = document.getElementById("recordButton");
+
+  if (!mediaRecorder || mediaRecorder.state === "inactive") {
+    // Create a new media recorder
+    mediaRecorder = new MediaRecorder(stream);
+
+    // Start the media recorder
+    mediaRecorder.start();
+
+    // Listen for dataavailable events from the media recorder
+    mediaRecorder.ondataavailable = (e) => {
+      // Add the recorded chunk to the recordedChunks array
+      recordedChunks.push(e.data);
+    };
+
+    // Update the button text and add the recording class
+    recordButton.classList.add("recording");
+  } else if (mediaRecorder.state === "recording") {
+    // Stop the media recorder
+    mediaRecorder.stop();
+
+    // Update the button text and remove the recording class
+    recordButton.classList.remove("recording");
+
+    // Save the recording as a file
+    saveRecording();
+  }
+}
+
+// Save the recording as a file
+function saveRecording() {
+  // Create a blob from the recorded chunks
+  const blob = new Blob(recordedChunks, { type: "audio/webm" });
+
+  // Create a download link for the blob
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "recording.webm";
+  a.style.display = "none";
+  document.body.appendChild(a);
+
+  // Click the link to download the file
+  a.click();
+
+  // Remove the link after the download
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 100);
+
+  // Clear the recorded chunks
+  recordedChunks = [];
+}
+
+// Add a click event listener to the record button
+document.getElementById("recordButton").addEventListener("click", () => {
+  // Get the local video element's stream
+  const localVideo = document.getElementById("Myface");
+  if (localVideo) {
+    toggleRecording(localVideo.srcObject);
+  } else {
+    alert("Local video stream not found.");
+  }
+});
