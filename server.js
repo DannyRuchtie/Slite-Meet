@@ -1,4 +1,10 @@
 const express = require("express");
+const multer = require("multer");
+const fs = require("fs");
+const util = require("util");
+const axios = require("axios");
+const FormData = require("form-data");
+
 const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
@@ -6,6 +12,11 @@ const { v4: uuidV4 } = require("uuid");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
+
+const OPENAI_API_KEY = "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";
+
+// Define the multer middleware for handling file uploads
+const upload = multer();
 
 app.get("/", (req, res) => {
   res.redirect(`/${uuidV4()}`);
@@ -15,41 +26,48 @@ app.get("/:room", (req, res) => {
   res.render("room", { roomId: req.params.room });
 });
 
-// Define an empty object to store connected clients per room
-const roomClients = {};
+app.post("/transcribe", upload.single("audio"), async (req, res) => {
+  try {
+    // Save the received audio file temporarily
+    const tempFilePath = "temp_audio.webm";
+    await util.promisify(fs.writeFile)(tempFilePath, req.file.buffer);
 
+    // Create a FormData object and append the audio file
+    const formData = new FormData();
+    formData.append("file", fs.createReadStream(tempFilePath), { filename: "audio.webm" });
+    formData.append("model", "whisper-1");
+
+    // Make the API call to the Whisper ASR API
+    const response = await axios.post("https://api.openai.com/v1/audio/transcriptions", formData, {
+      headers: {
+        ...formData.getHeaders(),
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+    });
+
+    // Delete the temporary audio file
+    await util.promisify(fs.unlink)(tempFilePath);
+
+    // Get the transcription from the response
+    const transcription = response.data.text;
+
+    // Send the transcription as a response
+    res.send({ transcription });
+  } catch (error) {
+    console.error("Error during transcription:", error);
+    res.status(500).send({ error: "Error during transcription" });
+  }
+});
+
+// Socket.io code for handling video connections
 io.on("connection", (socket) => {
   socket.on("join-room", (roomId, userId) => {
-    
-    // If the room doesn't exist in the roomClients object, create an empty array
-    if (!roomClients[roomId]) {
-      roomClients[roomId] = [];
-    }
-
-    // Join the room
     socket.join(roomId);
-
-    // Add the new user to the clients array of the room
-    roomClients[roomId].push(userId);
-
-    // Inform the other clients about the new user
     socket.to(roomId).emit("user-connected", userId);
 
-    // Send the list of clients to the new user, excluding the local user
-    socket.emit("clients-list", roomClients[roomId].filter((id) => id !== userId));
-
-
     socket.on("disconnect", () => {
-      // Remove the user from the clients array of the room
-      roomClients[roomId] = roomClients[roomId].filter((id) => id !== userId);
-
       socket.to(roomId).emit("user-disconnected", userId);
     });
-
-    socket.on("update-video-position", ({ userId, x, y }) => {
-      socket.to(roomId).emit("video-position-updated", { userId, x, y });
-    });
-
   });
 });
 

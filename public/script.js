@@ -197,27 +197,29 @@ function toggleRecording(stream) {
   }
 }
 
-// Save the recording as a file
-function saveRecording() {
+// Save the recording as a file and transcribe the audio
+async function saveRecording() {
   // Create a blob from the recorded chunks
   const blob = new Blob(recordedChunks, { type: "audio/webm" });
 
-  // Create a download link for the blob
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "recording.webm";
-  a.style.display = "none";
-  document.body.appendChild(a);
+  // Transcribe the recorded audio
+  await transcribeAudio(blob);
 
+  // Create a download link for the blob
+  // const url = URL.createObjectURL(blob);
+  // const a = document.createElement("a");
+  // a.href = url;
+  // a.download = "recording.webm";
+  // a.style.display = "none";
+  // document.body.appendChild(a);
   // Click the link to download the file
-  a.click();
+  // a.click();
 
   // Remove the link after the download
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 100);
+  // setTimeout(() => {
+  //   document.body.removeChild(a);
+  //   URL.revokeObjectURL(url);
+  // }, 100);
 
   // Clear the recorded chunks
   recordedChunks = [];
@@ -233,3 +235,32 @@ document.getElementById("recordButton").addEventListener("click", () => {
     alert("Local video stream not found.");
   }
 });
+
+
+// Function to transcribe the recorded audio
+async function transcribeAudio(blob) {
+  try {
+    // Create a FormData object and append the audio file
+    const formData = new FormData();
+    formData.append("audio", blob, "recording.webm");
+
+    // Send the audio file to the server for transcription
+    const response = await fetch("/transcribe", {
+      method: "POST",
+      body: formData,
+    });
+
+    // Check if the response is ok
+    if (response.ok) {
+      // Get the transcription from the response
+      const { transcription } = await response.json();
+
+      // Display the transcription or use it as needed
+      console.log("Transcription:", transcription);
+    } else {
+      console.error("Error during transcription:", response.status);
+    }
+  } catch (error) {
+    console.error("Error during transcription:", error);
+  }
+}
