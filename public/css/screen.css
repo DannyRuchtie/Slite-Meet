@@ -26,8 +26,9 @@ html.dragging body {
 
 html,
 body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 1rem;
-  color: #a1a1a1;
+  color: #3F434A;
   background: #f9efe4;
   padding: 0;
   margin: 0;
@@ -86,12 +87,12 @@ video {
   bottom:3rem;
   left:50%;
   margin-left: -2rem;
-  z-index: 9999;
+
   text-indent: -999px;
   overflow: hidden;
   border-radius: 50%;
   border:3px solid white;
-  outline: 3px solid #ACB1B9;
+  outline: 3px solid #DB2F2F;
   text-align: center;
 }
 
@@ -102,7 +103,7 @@ video {
   height:4rem;
   background: #DB2F2F;
   border-radius: 8px;
-  transition: all .2s ease-in-out;
+  transition: all .300s ease-in-out;
 }
 #recordButton span:hover{
   background: #ca2c2c;
@@ -110,4 +111,11 @@ video {
 
 #recordButton.recording span{
   transform: scale(0.6);
+}
+
+#copy-url-btn{
+  all: unset;
+  position: absolute;
+  top: 2rem;
+  right:2rem;
 }
