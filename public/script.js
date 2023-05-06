@@ -206,23 +206,6 @@ async function saveRecording() {
   // Transcribe the recorded audio
   await transcribeAudio(blob);
 
-  // Create a download link for the blob
-  // const url = URL.createObjectURL(blob);
-  // const a = document.createElement("a");
-  // a.href = url;
-  // a.download = "recording.webm";
-  // a.style.display = "none";
-  // document.body.appendChild(a);
-  // Click the link to download the file
-  // a.click();
-
-  // Remove the link after the download
-  // setTimeout(() => {
-  //   document.body.removeChild(a);
-  //   URL.revokeObjectURL(url);
-  // }, 100);
-
-  // Clear the recorded chunks
   recordedChunks = [];
 }
 
@@ -242,7 +225,7 @@ async function transcribeAudio(blob) {
   try {
     // Create a FormData object and append the audio file
     const formData = new FormData();
-    formData.append("audio", blob, "recording.mp3");
+    formData.append("audio", blob, "recording.webm");
 
     // Send the audio file to the server for transcription
     const response = await fetch("/transcribe", {

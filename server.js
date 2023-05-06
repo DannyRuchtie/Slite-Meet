@@ -13,7 +13,7 @@ const { v4: uuidV4 } = require("uuid");
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
-const OPENAI_API_KEY = "sk-";
+const OPENAI_API_KEY = "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";
 
 // Define the multer middleware for handling file uploads
 const upload = multer();
