@@ -1,3 +1,7 @@
+require('dotenv').config();
+
+const OPENAI_API_KEY = process.env['API_TOKEN'];
+
 const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
@@ -12,8 +16,6 @@ const { v4: uuidV4 } = require("uuid");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
-
-const OPENAI_API_KEY = "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";
 
 // Define the multer middleware for handling file uploads
 const upload = multer();
