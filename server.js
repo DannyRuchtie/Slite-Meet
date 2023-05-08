@@ -45,7 +45,12 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
     await util.promisify(fs.writeFile)(tempVideoPath, req.file.buffer);
 
     // Extract audio from the video file
-    const tempAudioPath = `temp-${path.basename(req.file.originalname, path.extname(req.file.originalname))}.wav`;
+    const tempAudioPath = path.join("public", `temp-${path.basename(req.file.originalname, path.extname(req.file.originalname))}.wav`);
+
+    //For testing the audio file
+    //const tempAudioPath = `temp-${path.basename(req.file.originalname, path.extname(req.file.originalname))}.wav`;
+    
+    
     await new Promise((resolve, reject) => {
       ffmpeg(tempVideoPath)
         .output(tempAudioPath)
@@ -84,8 +89,14 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
       }
     );
 
+// Log the entire response object
+console.log("ASR API Response:", JSON.stringify(response.data, null, 2));
+
+
  // Extract the transcription from the response
-const transcription = response.data.transcription;
+ const transcription = response.data.text;
+console.log("Transcription:", transcription);
+
 
 
   // Get the transcription from the response
@@ -124,6 +135,8 @@ await util.promisify(fs.unlink)(tempAudioPath);
         },
       }
     );
+    console.log("GPT-3 Request:", JSON.stringify(gptJson, null, 2));
+
 
     // Send the transcription as a response
     res.send({ transcription: gptResponse.data.choices[0].message.content });
