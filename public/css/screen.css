@@ -91,7 +91,7 @@ video {
   text-indent: -999px;
   overflow: hidden;
   border-radius: 50%;
-  border:3px solid white;
+  border:3px solid transparent;
   outline: 3px solid #DB2F2F;
   text-align: center;
 }

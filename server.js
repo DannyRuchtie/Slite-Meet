@@ -1,6 +1,6 @@
 require('dotenv').config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-console.log(OPENAI_API_KEY);
+
 
 const express = require("express");
 const multer = require("multer");
@@ -31,14 +31,17 @@ app.get("/:room", (req, res) => {
 app.post("/transcribe", upload.single("audio"), async (req, res) => {
   try {
     // Save the received audio file temporarily
-    const tempFilePath = "recording.webm";
+    
+    const tempFilePath = "recording.webm"; //replace with submitted file name
+
     await util.promisify(fs.writeFile)(tempFilePath, req.file.buffer);
 
     // Create a FormData object and append the audio file
     const formData = new FormData();
     formData.append("file", fs.readFileSync(tempFilePath), {
-      filename: tempFilePath,
+      filename: "test.m4a", //tempFilePath
     });
+
     formData.append("model", "whisper-1");
 
     // Make the API call to the Whisper ASR API
@@ -73,7 +76,8 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
           content: `Can you summarize the following text:
           """
           ${transcription}
-          """`
+          """      and write the entire text underneath `
+     
         }
       ],
     }
