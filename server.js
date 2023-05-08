@@ -139,7 +139,10 @@ await util.promisify(fs.unlink)(tempAudioPath);
 
 
     // Send the transcription as a response
-    res.send({ transcription: gptResponse.data.choices[0].message.content });
+    res.send({ 
+      transcription: transcription,
+      gptResponse: gptResponse.data.choices[0].message.content 
+    });
   } catch (error) {
     //console.error("Error during transcription:", error.response?.data);
     console.error("Error during transcription:", error.message, error.response?.data || error);
