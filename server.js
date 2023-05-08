@@ -1,6 +1,6 @@
 require('dotenv').config();
-
-const OPENAI_API_KEY = process.env['API_TOKEN'];
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+console.log(OPENAI_API_KEY);
 
 const express = require("express");
 const multer = require("multer");
@@ -37,7 +37,7 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
     // Create a FormData object and append the audio file
     const formData = new FormData();
     formData.append("file", fs.readFileSync(tempFilePath), {
-      filename: "recording.webm",
+      filename: tempFilePath,
     });
     formData.append("model", "whisper-1");
 

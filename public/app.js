@@ -1,8 +1,11 @@
 // Move items
 import interact from "https://cdn.interactjs.io/v1.10.11/interactjs/index.js";
 
+// Set initial position to (0, 0)
 const position = { x: 0, y: 0 };
 
+// Use interact library to make 'item' class draggable 
+// and restrict movement to within 'body' element
 interact(".item").draggable({
   // enable inertial throwing
   inertia: true,
@@ -14,61 +17,54 @@ interact(".item").draggable({
   ],
   listeners: {
     move(event) {
+      // Update position based on the event dx and dy
       position.x += event.dx;
       position.y += event.dy;
 
+      // Update the style of the target with the new position
       event.target.style.transform = `translate(${position.x}px, ${position.y}px)`;
     }
   }
 });
 
-
-// Share link
+// Get share link when click on button
+// by creating a temporary textarea element
 document.getElementById("copy-url-btn").addEventListener("click", () => {
-  // Create a temporary textarea element to hold the URL
   const tempTextarea = document.createElement("textarea");
-
-  // Set the value of the textarea to the current URL
   tempTextarea.value = window.location.href;
-
-  // Add the textarea to the DOM, offscreen to make it invisible
   tempTextarea.style.position = "fixed";
   tempTextarea.style.left = "-9999px";
   document.body.appendChild(tempTextarea);
-
-  // Select the content of the textarea
   tempTextarea.select();
   tempTextarea.setSelectionRange(0, 99999); // For mobile devices
-
-  // Execute the copy command
   document.execCommand("copy");
-
-  // Remove the textarea from the DOM
   document.body.removeChild(tempTextarea);
 
-  // Get the button element
+  // Change copy button text when clicked
+  // and revert back after 4 seconds
   const copyUrlBtn = document.getElementById("copy-url-btn");
-
-  // Change the button text
   copyUrlBtn.textContent = "Copied to clipboard!";
-
-  // Revert the button text back to the original after 4 seconds
   setTimeout(() => {
     copyUrlBtn.textContent = "Copy URL";
   }, 4000);
 });
 
+// Function to setup StereoPanner for video element 
 function setupStereoPanner(video) {
   const audioContext = new AudioContext();
   const source = audioContext.createMediaElementSource(video);
   const panner = audioContext.createStereoPanner();
 
+  // Connect source to panner and then to destination
   source.connect(panner);
   panner.connect(audioContext.destination);
 
   return panner;
 }
 
+// Function to update the pan value based on
+// the position of the video element relative
+// to the viewport
 function updatePanValue(video) {
   const rect = video.getBoundingClientRect();
   const viewportWidth = document.documentElement.clientWidth;
@@ -76,19 +72,15 @@ function updatePanValue(video) {
   video.panner.pan.value = panValue;
 }
 
+// Ensure element is always inside window
+// by calculating its maximum x and y positions
 function ensureElementIsInsideWindow(element) {
-  // Get the bounding rectangle of the element
   const rect = element.getBoundingClientRect();
-
-  // Get the viewport dimensions
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
-
-  // Calculate the maximum x and y positions of the element within the viewport
   const maxX = viewportWidth - rect.width;
   const maxY = viewportHeight - rect.height;
-
-  // Calculate the new x and y positions of the element to ensure it is inside the viewport
+  
   let newX = rect.left;
   let newY = rect.top;
 
@@ -104,10 +96,9 @@ function ensureElementIsInsideWindow(element) {
     newY = maxY;
   }
 
-  // Update the position of the element
   element.style.transform = `translate(${newX}px, ${newY}px)`;
 
-  // Update the pan value based on the element's new position
+  // If element is video, also update its pan value
   if (element.tagName === "VIDEO") {
     updatePanValue(element);
   }

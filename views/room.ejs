@@ -4,35 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-
+  <title>Slite Meet</title>
+  
   <script>
-    const ROOM_ID = "<%= roomId %>"
+    const ROOM_ID = "<%= roomId %>";
   </script>
 
-<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-<link href="css/screen.css" rel="stylesheet">
-
- <script src="/socket.io/socket.io.js" defer></script>
-
-  
-<title>Slite Meet</title>
-
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+  <link href="css/screen.css" rel="stylesheet" />
+  <script defer src="/socket.io/socket.io.js"></script>
+  <script defer src="script.js"></script>
+  <script type="module" defer src="app.js"></script>
 </head>
+
 <body>
-<div id="video-grid">
-</div>
-
-<button id="recordButton"><span>1</span></button>
-<button id="copy-url-btn">Copy URL</button>
-
-
-<div id="transcription"></div>
-
-
-<script src="script.js" defer></script>
-<script src="app.js" type="module" defer></script>
-
-
+  <div id="video-grid">&nbsp;</div>
+  <button id="recordButton"><span>1</span></button>
+  <button id="copy-url-btn">Copy URL</button>
+  <div id="transcription">&nbsp;</div>
 </body>
+
 </html>
