@@ -1,6 +1,13 @@
 require('dotenv').config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
+const ffmpeg = require("fluent-ffmpeg");
+const ffmpegPath = require("ffmpeg-static");
+ffmpeg.setFfmpegPath(ffmpegPath);
+
+const path = require("path");
+
+
 
 const express = require("express");
 const multer = require("multer");
@@ -30,16 +37,37 @@ app.get("/:room", (req, res) => {
 
 app.post("/transcribe", upload.single("audio"), async (req, res) => {
   try {
-    // Save the received audio file temporarily
+
+    console.log(`Received audio file: ${req.file.originalname}, type: ${req.file.mimetype}, size: ${req.file.size} bytes`);
+
+    // Save the received video file temporarily
+    const tempVideoPath = `temp-${req.file.originalname}`;
+    await util.promisify(fs.writeFile)(tempVideoPath, req.file.buffer);
+
+    // Extract audio from the video file
+    const tempAudioPath = `temp-${path.basename(req.file.originalname, path.extname(req.file.originalname))}.wav`;
+    await new Promise((resolve, reject) => {
+      ffmpeg(tempVideoPath)
+        .output(tempAudioPath)
+        .on("start", (commandLine) => {
+          console.log("Start audio extraction:", commandLine);
+        })
+        .on("end", () => {
+          console.log("Audio extraction completed.");
+          resolve();
+        })
+        .on("error", (error) => {
+          console.error("Audio extraction error:", error);
+          reject(error);
+        })
+        .run();
+    });
     
-    const tempFilePath = "recording.webm"; //replace with submitted file name
 
-    await util.promisify(fs.writeFile)(tempFilePath, req.file.buffer);
-
-    // Create a FormData object and append the audio file
+    // Create a FormData object and append the extracted audio file
     const formData = new FormData();
-    formData.append("file", fs.readFileSync(tempFilePath), {
-      filename: "test.m4a", //tempFilePath
+    formData.append("file", fs.readFileSync(tempAudioPath), {
+      filename: path.basename(tempAudioPath),
     });
 
     formData.append("model", "whisper-1");
@@ -56,11 +84,15 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
       }
     );
 
-    // Delete the temporary audio file
-    await util.promisify(fs.unlink)(tempFilePath);
+ // Extract the transcription from the response
+const transcription = response.data.transcription;
 
-    // Get the transcription from the response
-    const transcription = response.data.text;
+
+  // Get the transcription from the response
+await util.promisify(fs.unlink)(tempVideoPath);
+
+// Delete the temporary audio file
+await util.promisify(fs.unlink)(tempAudioPath);
 
     const gptJson = {
       model: 'gpt-3.5-turbo',
@@ -96,7 +128,9 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
     // Send the transcription as a response
     res.send({ transcription: gptResponse.data.choices[0].message.content });
   } catch (error) {
-    console.error("Error during transcription:", error.response?.data);
+    //console.error("Error during transcription:", error.response?.data);
+    console.error("Error during transcription:", error.message, error.response?.data || error);
+
     res.status(500).send({ error: "Error during transcription" });
   }
 });
