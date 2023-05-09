@@ -43,9 +43,9 @@ document.getElementById("copy-url-btn").addEventListener("click", () => {
   // Change copy button text when clicked
   // and revert back after 4 seconds
   const copyUrlBtn = document.getElementById("copy-url-btn");
-  copyUrlBtn.textContent = "Copied to clipboard!";
+  copyUrlBtn.textContent = "Link copied";
   setTimeout(() => {
-    copyUrlBtn.textContent = "Copy URL";
+    copyUrlBtn.textContent = "Meting Link";
   }, 4000);
 });
 

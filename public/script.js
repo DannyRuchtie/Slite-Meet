@@ -204,6 +204,7 @@ async function saveRecording() {
   const blob = new Blob(recordedChunks, {type: "audio/webm"});
 
   document.getElementById("recordButton").classList.add("loading");
+  document.getElementById("gpt-response").classList.add("slideIn");
 
   // Transcribe the recorded audio
   await transcribeAudio(blob);
@@ -249,6 +250,7 @@ async function transcribeAudio(blob) {
 
       // Update the content of the div with the GPT-3 response
       document.getElementById("gpt-response").textContent = gptResponse;
+ 
     } else {
       console.error("Error during transcription:", response.status);
     }
@@ -256,6 +258,7 @@ async function transcribeAudio(blob) {
     console.error("Error during transcription:", error);
   }finally {
     document.getElementById("recordButton").classList.remove("loading");
+    
   }
 }
 

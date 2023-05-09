@@ -1,6 +1,6 @@
 ## Slite Meet
 
-![Meet](/public/images/meet.png.jpg)
+![Meet](/public/images/meet.png)
 
 ## Client
 
