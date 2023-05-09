@@ -26,8 +26,7 @@ html.dragging body {
 
 html,
 body {
-  /* font-family: -apple-system, BlinkMacSystemFont, sans-serif; */
-  font-family: 'SF Mono', SFMono-Regular, ui-monospace,
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   'DejaVu Sans Mono', Menlo, Consolas, monospace;
   font-size: 1rem;
   color: #3F434A;
@@ -146,6 +145,7 @@ video {
 
 
 #gpt-response{
+  font-family: 'SF Mono', SFMono-Regular, ui-monospace;
   width: 60vw;
   height: 90vh;
   overflow-y: scroll;
