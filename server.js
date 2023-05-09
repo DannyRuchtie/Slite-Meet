@@ -116,10 +116,10 @@ await util.promisify(fs.unlink)(tempAudioPath);
           content:'',
         },
         { role: 'user',
-          content: `Can you summarize the following text:
+          content: `The following text is a converation between multiple people can you summarize it for me:
           """
           ${transcription}
-          """      and write the entire text underneath `
+          """   and write the entire text underneath `
      
         }
       ],
