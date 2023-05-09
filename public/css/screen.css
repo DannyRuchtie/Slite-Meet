@@ -26,7 +26,9 @@ html.dragging body {
 
 html,
 body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  /* font-family: -apple-system, BlinkMacSystemFont, sans-serif; */
+  font-family: 'SF Mono', SFMono-Regular, ui-monospace,
+  'DejaVu Sans Mono', Menlo, Consolas, monospace;
   font-size: 1rem;
   color: #3F434A;
   background: #f9efe4;
