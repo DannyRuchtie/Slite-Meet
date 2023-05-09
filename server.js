@@ -116,7 +116,7 @@ await util.promisify(fs.unlink)(tempAudioPath);
           content:'',
         },
         { role: 'user',
-          content: `The following text is a converation between multiple people can you summarize it for me:
+          content: `The following text is a converation can you please summarize it for me and list highlights and action items if there are any:
           """
           ${transcription}
           """   and write the entire text underneath `
