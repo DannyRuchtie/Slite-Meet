@@ -11,5 +11,5 @@ This code is used to create a video chat application using the web server. It us
 Server.js shows an example of a realtime video conferencing application using Node.js, Express.js, Socket.io and UUID. The functionality is implemented by creating an Express server and setting up a Socket.io server to handle communication between connected clients. When a user visits the main page, they are redirected to a unique room using UUIDs and the Express view engine is used to render the page for the specified room. An empty object is then used to store all the connected clients per room and Socket.io is used to join, inform, update and disconnect users. Finally, the server listens on port 9999.
 
 
-##Openai
+## Openai
 Utilizing OpenAI’s Whisper and GPT for transcribing and summarizing meetings.
